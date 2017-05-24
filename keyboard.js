@@ -38,6 +38,11 @@
             // 前一个失焦
             this.blur();
 
+            // 所有源生元素失焦
+            Array.prototype.some.call(document.querySelectorAll("input,textarea"),function (it) {
+                it.blur()
+            })
+
             // 设定新一个
             this.bindInput = input;
 

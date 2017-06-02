@@ -95,13 +95,15 @@
         },
         sendKey:function (key) {
             if(this.bindInput){
-                // 不能重复输入 '.'
-                if(key=='.' && this.dynamicValue.indexOf('.')>0)return ;
+                var value = this.bindInput.getAttribute('data-kb-value');
+
+                if(!(value + key).match(/^(0|([1-9]+0*\.?|(0\.))\d{0,2})$/)){
+                    return
+                }
 
                 // 长度限制
                 if(this.bindInput.getAttribute('data-kb-input-limit') && this.dynamicValue.length>=this.bindInput.getAttribute('data-kb-input-limit'))return;
 
-                var value = this.bindInput.getAttribute('data-kb-value');
                 this.dynamicValue = value + key;
             }
         },
@@ -231,7 +233,7 @@
 
     function kbTouch(e) {
         e.stopPropagation();
-        e.preventDefault()
+        e.preventDefault();
         var btn = e.target;
         if(btn.getAttribute('data-kb-type')=="char")
             Keyboard.sendKey(e.target.innerText);
@@ -252,19 +254,37 @@
     // 构建长按事件
     var timer_justify,timer_key;
     kb.addEventListener('touchstart',function (e) {
+        clearTimeout(timer_justify)
         timer_justify = setTimeout(function () {
+            clearInterval(timer_key);
             timer_key = setInterval(function(){
                 var longtouchEvt = new Event('longtouch',{"bubbles":true, "cancelable":true});
                 e.target.dispatchEvent(longtouchEvt)
-            },200);
-        },800)
+            },100);
+        },300)
     });
 
     kb.addEventListener('touchend',function (e) {
         clearTimeout(timer_justify);
         clearInterval(timer_key);
     });
+    kb.addEventListener('touchmove',function (e) {
+        clearTimeout(timer_justify);
+        clearInterval(timer_key);
+    });
+    kb.addEventListener('mouseup',function (e) {
+        clearTimeout(timer_justify);
+        clearInterval(timer_key);
+    });
+    kb.addEventListener('keyup',function (e) {
+        clearTimeout(timer_justify);
+        clearInterval(timer_key);
+    });
 
+    kb.addEventListener('keyup',function (e) {
+        clearTimeout(timer_justify);
+        clearInterval(timer_key);
+    });
 
     /**
      * 底部填充块
